@@ -185,6 +185,12 @@ class Parser {
 	 * @param stdClass $json_content
 	 */
 	private function set_gazette_info(stdClass $json_content) {
+		if (!property_exists($json_content, 'ad') || 
+				!property_exists($json_content, 'session') ||
+				!property_exists($json_content, 'sitting') ||
+				!property_exists($json_content, 'speaker')) {
+			return;
+		}
 		$this->ad = $json_content->ad;
 		$this->session = $json_content->session;
 		$this->sitting = $json_content->sitting;
