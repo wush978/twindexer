@@ -1,8 +1,8 @@
 <?php
 
-require_once( __DIR__ . '/PersonDatabase.interface.php' );
+require_once( __DIR__ . '/PersonDatabase.class.php' );
 
-class PHPPersonDatabase implements PersonDatabase {
+class PHPPersonDatabase extends PersonDatabase {
 	
 	private $person_db = array();
 	
@@ -10,16 +10,22 @@ class PHPPersonDatabase implements PersonDatabase {
 		
 	}
 	
-	public function add_approval($period, $ad, $index, $line, $person) {
-		if (!array_key_exists($person, $person_db)) {
-			$person_db[$person] = array();
+	public function add($type, $ad, $session, $sitting, $line, $person, Parser $parser = NULL) {
+		$person = $this->filter($person);
+		if (!array_key_exists($person, $this->person_db)) {
+			$this->person_db[$person] = array();
 		}
-		$db = &$person_db[$person];
+		$db = &$this->person_db[$person];
 		array_push($db, array(
-			'period' => $period,
+			'type' => $type,
 			'ad' => $ad,
-			'index' => $index,
-			'line' => $line	
+			'session' => $session,
+			'sitting' => $sitting,
+			'line' => $line,	
 			));
+	}
+	
+	public function list_people() {
+		return array_keys($this->person_db);
 	}
 }
