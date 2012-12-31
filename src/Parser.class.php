@@ -136,7 +136,7 @@ class Parser {
 				return true;
 			}
 			/* @var $schema Schema */
-			echo $json_content->type . "\n";
+// 			echo $json_content->type . "\n";
 			$schema = $this->get_type_callback($json_content->type);
 			if ($schema === false) {
 				return true;

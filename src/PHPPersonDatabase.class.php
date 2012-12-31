@@ -12,6 +12,9 @@ class PHPPersonDatabase extends PersonDatabase {
 	
 	public function add($type, $ad, $session, $sitting, $line, $person, Parser $parser = NULL) {
 		$person = $this->filter($person);
+		if ($person === false) {
+			return;
+		}
 		if (!array_key_exists($person, $this->person_db)) {
 			$this->person_db[$person] = array();
 		}
