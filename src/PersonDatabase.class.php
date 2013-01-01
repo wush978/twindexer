@@ -5,6 +5,12 @@ require_once( __DIR__ . '/../log4php/src/main/php/Logger.php');
 abstract class PersonDatabase {
 	
 	/**
+	 * Stored lots of known name
+	 * @var string[]
+	 */
+	private $name_db = NULL;
+	
+	/**
 	 *
 	 * @var Logger
 	 */
@@ -37,12 +43,20 @@ abstract class PersonDatabase {
 	 */
 	abstract public function get_db();
 	
+	/**
+	 * clean db
+	 */
+	abstract public function clean_db();
+	
 	public function __construct() {
 		$this->logger = Logger::getLogger(__CLASS__);
 	}
 	
 	public function filter($person) {
 		$this->debug("filter: $person");
+		if (!is_null($this->name_db)) {
+			return $this->filter_by_name_db($person);
+		}
 		/* remove space */
 		$person = preg_replace('#\s#ui', '', $person);
 		/* filter out typo */
@@ -133,5 +147,18 @@ abstract class PersonDatabase {
 		$this->logger->debug($str);
 	}
 	
+	public function set_name_db(array $name_db) {
+		$this->name_db = $name_db;
+	}
+	
+	private function filter_by_name_db($person) {
+		if (in_array($person, $this->name_db)) {
+			return $person;
+		}
+		else {
+			$this->info("filter out: $person becuase it is not in name_db");
+			return false;
+		}
+	}
 	
 }

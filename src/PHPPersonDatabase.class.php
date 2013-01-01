@@ -17,6 +17,10 @@ class PHPPersonDatabase extends PersonDatabase {
 	 */
 	private $parser;
 	
+	/**
+	 * is apply filter or not
+	 * @var bool
+	 */
 	static public $is_filter = true;
 	
 	private $person_db = array();
@@ -51,6 +55,10 @@ class PHPPersonDatabase extends PersonDatabase {
 	
 	public function get_db() {
 		return $this->person_db;
+	}
+	
+	public function clean_db() {
+		$this->person_db = array();
 	}
 	
 	protected function add_title($person, $title) {

@@ -34,8 +34,7 @@ class exmotion implements Schema {
 					$this->parser->get_sitting(),
 					$this->parser->get_line_num(),
 					$person,
-					$this->parser,
-					FALSE);
+					$this->parser);
 		}
 	}
 	
