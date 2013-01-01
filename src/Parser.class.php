@@ -1,9 +1,16 @@
 <?php
 
+require_once( __DIR__ . '/../log4php/src/main/php/Logger.php');
 require_once( __DIR__ . '/PersonDatabase.class.php');
 require_once( __DIR__ . '/Schema.interface.php');
 
 class Parser {
+	
+	/**
+	 * 
+	 * @var Logger
+	 */
+	private $logger;
 	
 	/**
 	 * 
@@ -145,6 +152,7 @@ class Parser {
 				$schema($json_content, $this);
 			}
 			catch (Exception $e) {
+				echo $e->getTraceAsString() . "\n";
 				throw new Exception($e->getMessage() . ' (' . $this->get_line_num() .')');
 			}
 			return true;

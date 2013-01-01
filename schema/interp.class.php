@@ -6,6 +6,12 @@ class interp implements Schema {
 	
 	/**
 	 * 
+	 * @var Logger
+	 */
+	private $logger;
+	
+	/**
+	 * 
 	 * @var Parser
 	 */
 	private $parser;
@@ -16,12 +22,13 @@ class interp implements Schema {
 	private $db;
 	
 	public function __construct(Parser $parser) {
+		$this->logger = Logger::getLogger(__CLASS__);
 		$this->parser = $parser;
 		$this->db = $parser->get_db();
 	}
 	
 	public function __invoke(stdClass $json_content) {
-		$people = $json_content->people;
+// 		$people = $json_content->people;
 		foreach($json_content->people as $person) {
 			$this->db->add(
 				$json_content->type, 

@@ -1,8 +1,15 @@
 <?php
 
-
+require_once( __DIR__ . '/../log4php/src/main/php/Logger.php');
 
 abstract class PersonDatabase {
+	
+	/**
+	 *
+	 * @var Logger
+	 */
+	private $logger;
+	
 	
 	static private $rule_list = array();
 	
@@ -29,14 +36,21 @@ abstract class PersonDatabase {
 	 */
 	abstract public function get_db();
 	
+	public function __construct() {
+		Logger::getLogger(__CLASS__);
+	}
+	
 	protected function filter($person) {
 		if (preg_match('#' . self::get_rule('last_name') . self::get_rule('title') . self::get_rule('first_name') . '$#u', $person, $match)) {
+			$this->add_title($match['last_name'] . $match['first_name'], $match['title']);
 			return $match['last_name'] . $match['first_name'];
 		}
 		if (preg_match('#^主\s{0,1}席$#u', $person, $match)) {
-			return '主席';
+			$chairman = $this->filter($this->query_chairman());
+			return $chairman;
 		}
 		if (preg_match('#' . self::get_rule('aborigine') . self::get_rule('title') . '$#u', $person, $match)) {
+			$this->add_title($match['aborigine'], $match['title']);
 			return $match['aborigine'];
 		}
 		return false;
@@ -50,4 +64,17 @@ abstract class PersonDatabase {
 		self::$rule_list[$rule_name] = $rule;
 		return self::$rule_list[$rule_name];
 	}
+	
+	/**
+	 * 
+	 * @param string $person
+	 * @param string $title
+	 */
+	abstract protected function add_title($person, $title);
+	
+	/**
+	 * @return string name of chairman
+	 */
+	abstract protected function query_chairman();
+	
 }

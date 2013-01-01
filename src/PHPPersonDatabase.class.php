@@ -4,24 +4,37 @@ require_once( __DIR__ . '/PersonDatabase.class.php' );
 
 class PHPPersonDatabase extends PersonDatabase {
 	
+	/**
+	 *
+	 * @var Logger
+	 */
+	private $logger;
+	
+	
+	/**
+	 * 
+	 * @var Parser
+	 */
+	private $parser;
+	
 	static public $is_filter = true;
 	
 	private $person_db = array();
 	
 	public function __construct() {
-		
+		parent::__construct();
+		$this->logger = Logger::getLogger(__CLASS__);		
 	}
 	
 	public function add($type, $ad, $session, $sitting, $line, $person, Parser $parser = NULL, $filter = TRUE) {
+		$this->parser = $parser;
 		if (self::$is_filter && $filter) {
 			$person = $this->filter($person);
 		}
 		if ($person === false) {
 			return;
 		}
-		if (!array_key_exists($person, $this->person_db)) {
-			$this->person_db[$person] = array();
-		}
+		$this->check_db($person);
 		$db = &$this->person_db[$person];
 		array_push($db, array(
 			'type' => $type,
@@ -38,5 +51,24 @@ class PHPPersonDatabase extends PersonDatabase {
 	
 	public function get_db() {
 		return $this->person_db;
+	}
+	
+	protected function add_title($person, $title) {
+		$this->check_db($person);
+		$db = &$this->person_db[$person];
+		if (!array_key_exists('title', $db)) {
+			$db['title'] = array();
+		}
+		$db['title'][$title] = true;
+	}
+	
+	protected function query_chairman() {
+		return $this->parser->get_speaker();
+	}
+	
+	private function check_db($person) {
+		if (!array_key_exists($person, $this->person_db)) {
+			$this->person_db[$person] = array();
+		}
 	}
 }
