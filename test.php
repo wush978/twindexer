@@ -29,10 +29,15 @@ $parser = new Parser($db, 'interp');
 /* debugging block end */
 
 PHPPersonDatabase::$is_filter = true;
-$index = array(array('file_name' => '3599.md', 'id' => 123));
+
+/* for specific md file start */
+// $index = array(array('file_name' => '3599.md', 'id' => 123));
+/* for specific md file end */
+
 foreach($index as $index_element) {
 	$file_name = $index_element['file_name'];
 	$id = $index_element['id'];
+	$parser->set_parser_info($index_element['ad'], $index_element['session'], $index_element['sitting']);
 	$parser->parse("raw/$file_name");
 }
 file_put_contents('result/people-list.json', json_encode($db->list_people(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
