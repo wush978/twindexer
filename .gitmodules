@@ -1,0 +1,3 @@
+[submodule "log4php"]
+	path = log4php
+	url = git://git.apache.org/logging-log4php.git
