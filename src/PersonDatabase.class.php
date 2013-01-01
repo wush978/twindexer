@@ -44,8 +44,8 @@ abstract class PersonDatabase {
 	public function filter($person) {
 		$this->debug("filter: $person");
 		/* filter out typo */
-		if (preg_match('#' . self::get_rule('src_typo') . '#ui', $person)) {
-			$this->info("src_typo: $person");
+		if ($this->is_src_typo($person)) {
+			$this->info("src typo: $person");
 			return false;
 		}
 		/* check aborigine with title */
@@ -86,6 +86,26 @@ abstract class PersonDatabase {
 	/**
 	 * 
 	 * @param string $person
+	 * @return bool
+	 */
+	private function is_src_typo(&$person) {
+		$src_typo = self::get_rule('src_typo');
+		for( $i = 0;$i < count($src_typo['from']);$i++) {
+			$from = $src_typo['from'][$i];
+			$to = $src_typo['to'][$i];
+			if (preg_match("#^$from$#ui", $person)) {
+				if ($to === false) {
+					return true;
+				}
+				$person = $to;
+			}
+		}
+		return false;		
+	}
+	
+	/**
+	 * 
+	 * @param string $person
 	 * @param string $title
 	 */
 	abstract protected function add_title($person, $title);
@@ -110,5 +130,6 @@ abstract class PersonDatabase {
 	private function debug($str) {
 		$this->logger->debug($str);
 	}
+	
 	
 }

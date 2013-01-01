@@ -91,6 +91,19 @@ class Parser {
 	private $speaker;
 	
 	/**
+	 * 上一個檔案的主席
+	 * @var string
+	 */
+	private $ex_speaker = '';
+	
+	/**
+	 * If first ```json block or not
+	 * 
+	 * @var bool
+	 */
+	private $is_first;
+	
+	/**
 	 * 
 	 * @param PersonDatabase $db
 	 */
@@ -106,6 +119,7 @@ class Parser {
 		$this->logger->trace("Start parsing $file_name");
 		$this->file_content = file($file_name);
 		$this->state = 0;
+		$this->is_first = true;
 		for($this->line_num = 0;$this->line_num < count($this->file_content);$this->line_num++) {
 			$this->str = $this->file_content[$this->line_num];
 			switch($this->state) {
@@ -115,6 +129,7 @@ class Parser {
 			case 1:
 				$this->handle_idention();
 				if ($this->end_json()) {
+					$this->is_first = false;
 					break;
 				}
 				$this->json_str .= $this->str;
@@ -147,8 +162,11 @@ class Parser {
 			if (gettype($json_content)  !== 'object' || get_class($json_content) !== 'stdClass') {
 				throw new Exception('failed to parse string at ' . $this->line_num . ' : (' . $this->json_str . ')');
 			}
-			if(!property_exists($json_content, 'type')) {
+			if ($this->is_first) {
 				$this->set_gazette_info($json_content);
+			}
+			if(!property_exists($json_content, 'type')) {
+// 				$this->set_gazette_info($json_content);
 				return true;
 			}
 			/* @var $schema Schema */
@@ -210,16 +228,29 @@ class Parser {
 	 * @param stdClass $json_content
 	 */
 	private function set_gazette_info(stdClass $json_content) {
-		if (!property_exists($json_content, 'ad') || 
-				!property_exists($json_content, 'session') ||
-				!property_exists($json_content, 'sitting') ||
-				!property_exists($json_content, 'speaker')) {
-			return;
+// 		if (!property_exists($json_content, 'ad') || 
+// 				!property_exists($json_content, 'session') ||
+// 				!property_exists($json_content, 'sitting') ||
+// 				!property_exists($json_content, 'speaker')) {
+// 			return;
+// 		}
+// 		$this->ad = $json_content->ad;
+// 		$this->session = $json_content->session;
+// 		$this->sitting = $json_content->sitting;
+		if (property_exists($json_content, 'speaker')) {
+			$this->ex_speaker = $this->speaker;
+			$this->speaker = $json_content->speaker;			
 		}
-		$this->ad = $json_content->ad;
-		$this->session = $json_content->session;
-		$this->sitting = $json_content->sitting;
-		$this->speaker = $json_content->speaker;
+		else {
+			$this->speaker = $this->ex_speaker;
+			$this->info('no speaker is provieded. use ' . $this->ex_speaker . ' instead');
+		}
+	}
+	
+	public function set_parser_info($ad, $session, $sitting) {
+		$this->ad = $ad;
+		$this->session = $session;
+		$this->sitting = $sitting;
 	}
 	
 	/**
@@ -263,5 +294,13 @@ class Parser {
 	 */
 	public function get_line_num() {
 		return $this->line_num;
+	}
+	
+	/**
+	 * log message
+	 * @param unknown_type $str
+	 */
+	private function info($str) {
+		$this->logger->info($str);
 	}
 }
