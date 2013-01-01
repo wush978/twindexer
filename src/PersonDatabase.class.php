@@ -43,6 +43,8 @@ abstract class PersonDatabase {
 	
 	public function filter($person) {
 		$this->debug("filter: $person");
+		/* remove space */
+		$person = preg_replace('#\s#ui', '', $person);
 		/* filter out typo */
 		if ($this->is_src_typo($person)) {
 			$this->info("src typo: $person");
@@ -60,7 +62,7 @@ abstract class PersonDatabase {
 			return $match['aborigine'];
 		}		
 		/* check person with title */
-		if (preg_match('#' . self::get_rule('last_name') . self::get_rule('title') . self::get_rule('first_name') . '$#u', $person, $match)) {
+		if (preg_match('#^' . self::get_rule('last_name') . self::get_rule('title') . self::get_rule('first_name') . '$#u', $person, $match)) {
 			$this->add_title($match['last_name'] . $match['first_name'], $match['title']);
 			return $match['last_name'] . $match['first_name'];
 		}
