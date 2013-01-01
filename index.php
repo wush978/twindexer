@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * 
+ * TODO: fix variable name: period->ad, ...
+ */
+
 function get_index() {
 	$retval = array();
 	
@@ -50,7 +55,13 @@ function get_index() {
 			if (!array_key_exists("$period 屆 $ad 會期", $retval['index_range']))
 				continue;
 			foreach($retval['index_range']["$period 屆 $ad 會期"] as $index) {
-				array_push($retval_file_name, array('id' => "$period 屆 $ad 會期 $index", 'file_name' => $retval["$period 屆 $ad 會期 $index"]));
+				array_push($retval_file_name, array(
+						'id' => "$period 屆 $ad 會期 $index", 
+						'file_name' => $retval["$period 屆 $ad 會期 $index"],
+						'ad' => $period,
+						'session' => $ad,
+						'sitting' => $index,
+						));
 			}
 		}
 	}
