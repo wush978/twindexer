@@ -1,5 +1,7 @@
 <?php
 
+
+
 abstract class PersonDatabase {
 	
 	static private $rule_list = array();
@@ -13,13 +15,19 @@ abstract class PersonDatabase {
 	 * @param string $line
 	 * @param string $person
 	 * @param Parser $parser
+	 * @param bool $filter
 	 */
-	abstract public function add($type, $ad, $session, $sitting, $line, $person, Parser $parser = NULL);
+	abstract public function add($type, $ad, $session, $sitting, $line, $person, Parser $parser = NULL, $filter = TRUE);
 	
 	/**
 	 * @return string[]
 	 */
 	abstract public function list_people();
+	
+	/**
+	 * @return db result
+	 */
+	abstract public function get_db();
 	
 	protected function filter($person) {
 		if (preg_match('#' . self::get_rule('last_name') . self::get_rule('title') . self::get_rule('first_name') . '$#u', $person, $match)) {
