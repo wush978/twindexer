@@ -141,7 +141,12 @@ class Parser {
 			if ($schema === false) {
 				return true;
 			}
-			$schema($json_content, $this);
+			try {
+				$schema($json_content, $this);
+			}
+			catch (Exception $e) {
+				throw new Exception($e->getMessage() . ' (' . $this->get_line_num() .')');
+			}
 			return true;
 		}
 		return false;
