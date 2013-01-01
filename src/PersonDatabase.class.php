@@ -67,7 +67,7 @@ abstract class PersonDatabase {
 			return $match['last_name'] . $match['first_name'];
 		}
 		/* check chairman */
-		if (preg_match('#^主\s{0,1}席$#u', $person, $match)) {
+		if (preg_match('#^主\s{0,1}席#u', $person, $match)) {
 			$chairman = $this->filter($this->query_chairman());
 			$this->info("$person -> $chairman");
 			return $chairman;
