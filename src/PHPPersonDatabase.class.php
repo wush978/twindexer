@@ -69,6 +69,11 @@ class PHPPersonDatabase extends PersonDatabase {
 	private function check_db($person) {
 		if (!array_key_exists($person, $this->person_db)) {
 			$this->person_db[$person] = array();
+			$ad = $this->parser->get_ad();
+			$session = $this->parser->get_session();
+			$sitting = $this->parser->get_sitting();
+			$line_num = $this->parser->get_line_num();
+			$this->logger->trace("ad:$ad session:$session sitting:$sitting line:$line_num add person: $person");
 		}
 	}
 }

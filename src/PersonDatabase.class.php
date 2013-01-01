@@ -12,6 +12,7 @@ abstract class PersonDatabase {
 	
 	
 	static private $rule_list = array();
+
 	
 	/**
 	 * add an action to database
@@ -37,26 +38,43 @@ abstract class PersonDatabase {
 	abstract public function get_db();
 	
 	public function __construct() {
-		Logger::getLogger(__CLASS__);
+		$this->logger = Logger::getLogger(__CLASS__);
 	}
 	
-	protected function filter($person) {
+	public function filter($person) {
+		$this->debug("filter: $person");
+		/* filter out typo */
+		if (preg_match('#' . self::get_rule('src_typo') . '#ui', $person)) {
+			$this->info("src_typo: $person");
+			return false;
+		}
+		/* check aborigine with title */
+		if (preg_match('#' . self::get_rule('aborigine') . self::get_rule('title') . '$#u', $person, $match)) {
+			$this->add_title($match['aborigine'], $match['title']);
+			$this->info("aborigine: $person with title");
+			return $match['aborigine'];
+		}
+		/* check aborigine */
+		if (preg_match('#' . self::get_rule('aborigine') . '#u', $person, $match)) {
+			$this->info("aborigine: $person");
+			return $match['aborigine'];
+		}		
+		/* check person with title */
 		if (preg_match('#' . self::get_rule('last_name') . self::get_rule('title') . self::get_rule('first_name') . '$#u', $person, $match)) {
 			$this->add_title($match['last_name'] . $match['first_name'], $match['title']);
 			return $match['last_name'] . $match['first_name'];
 		}
+		/* check chairman */
 		if (preg_match('#^主\s{0,1}席$#u', $person, $match)) {
 			$chairman = $this->filter($this->query_chairman());
+			$this->info("$person -> $chairman");
 			return $chairman;
 		}
-		if (preg_match('#' . self::get_rule('aborigine') . self::get_rule('title') . '$#u', $person, $match)) {
-			$this->add_title($match['aborigine'], $match['title']);
-			return $match['aborigine'];
-		}
+		$this->info("filter out: $person");
 		return false;
 	} 
 	
-	static private function get_rule($rule_name) {
+	static public function get_rule($rule_name) {
 		if (array_key_exists($rule_name, self::$rule_list)) {
 			return self::$rule_list[$rule_name];
 		}
@@ -76,5 +94,21 @@ abstract class PersonDatabase {
 	 * @return string name of chairman
 	 */
 	abstract protected function query_chairman();
+	
+	/**
+	 * 
+	 * @param logging message $str
+	 */
+	private function info($str) {
+		$this->logger->info($str);		
+	}
+	
+	/**
+	 * 
+	 * @param logging message $str
+	 */
+	private function debug($str) {
+		$this->logger->debug($str);
+	}
 	
 }

@@ -61,6 +61,12 @@ class Parser {
 	private $schema_path_suffix;
 	
 	/**
+	 * 
+	 * @var string applied schema
+	 */
+	private $schema = '';
+	
+	/**
 	 * 屆
 	 * @var int
 	 */
@@ -88,13 +94,16 @@ class Parser {
 	 * 
 	 * @param PersonDatabase $db
 	 */
-	public function __construct(PersonDatabase $db) {
+	public function __construct(PersonDatabase $db, $schema = '') {
+		$this->logger = Logger::getLogger(__CLASS__);
 		$this->db = $db;
 		$this->schema_path_prefix = __DIR__ . '/../schema/';
 		$this->schema_path_suffix = '.class.php';
+		$this->schema = $schema;
 	}
 	
 	public function parse($file_name) {
+		$this->logger->trace("Start parsing $file_name");
 		$this->file_content = file($file_name);
 		$this->state = 0;
 		for($this->line_num = 0;$this->line_num < count($this->file_content);$this->line_num++) {
@@ -144,6 +153,9 @@ class Parser {
 			}
 			/* @var $schema Schema */
 // 			echo $json_content->type . "\n";
+			if ($this->schema !== $json_content->type) { 
+				return true;
+			}
 			$schema = $this->get_type_callback($json_content->type);
 			if ($schema === false) {
 				return true;
