@@ -68,3 +68,15 @@ function get_index() {
 	return($retval_file_name);
 }
 
+function query_file_name($index, $ad, $session, $sitting) {
+	foreach($index as $index_element) {
+		if ($index_element['ad'] != $ad)
+			continue;
+		if ($index_element['session'] != $session) 
+			continue;
+		if ($index_element['sitting'] != $sitting) 
+			continue;
+		return $index_element['file_name'];
+	}
+	throw Exception("not found");
+}
