@@ -34,6 +34,8 @@ class PHPPersonDatabase extends PersonDatabase {
 		$this->parser = $parser;
 		if (self::$is_filter && $filter) {
 			$person = $this->filter($person);
+			if ($person === "杜部長")
+				die(print_r($this, true));
 		}
 		if ($person === false) {
 			return;

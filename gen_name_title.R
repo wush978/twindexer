@@ -20,7 +20,9 @@ title_list = c(
 		'召集人')
 
 library(rjson)
-people_list = fromJSON(file='result/people-list.interp.json')
+people_list1 = fromJSON(file='result/people-list.interp.json')
+people_list2 = fromJSON(file='result/people-list.exmotion.json')
+people_list <- unique(c(people_list1, people_list2))
 
 # ppl_title_list = c()
 # for(name in people_list) {
@@ -44,6 +46,6 @@ people_list = fromJSON(file='result/people-list.interp.json')
 library(Rcpp)
 sourceCpp("gen_name_title.cpp")
 result <- genNameTitle(general_prefix1, general_prefix2, title_list, people_list)
-for(i in 1:length(result)) {
-	cat(sprintf("%s,%s\n", names(result)[i], result[i]))
+for(i in 1:length(result[["name"]])) {
+	cat(sprintf("%s,%s,%s\n", names(result[["name"]])[i], result[["name"]][i], result[["title"]][i]))
 }

@@ -36,7 +36,9 @@ foreach($index as $index_element) {
 	$parser->set_parser_info($index_element['ad'], $index_element['session'], $index_element['sitting']);
 	$parser->parse("raw/$file_name");
 }
-file_put_contents('result/people-list.interp.json', json_encode($db->list_people(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+$people_list = $db->list_people();
+sort($people_list);
+file_put_contents('result/people-list.interp.json', json_encode($people_list, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 file_put_contents('result/interp.json', json_encode($db->get_db(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 
 $db->set_name_db($db->list_people());
@@ -48,5 +50,7 @@ foreach($index as $index_element) {
 	$parser->set_parser_info($index_element['ad'], $index_element['session'], $index_element['sitting']);
 	$parser->parse("raw/$file_name");
 }
-file_put_contents('result/people-list.exmotion.json', json_encode($db->list_people(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+$people_list = $db->list_people();
+sort($people_list);
+file_put_contents('result/people-list.exmotion.json', json_encode($people_list, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
 file_put_contents('result/exmotion.json', json_encode($db->get_db(), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

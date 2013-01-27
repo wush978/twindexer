@@ -1,6 +1,14 @@
 PHP := ~/bin/bin/php -c ~/etc 
 
-all : result/exmotion.json result/exmotion-dictionary.json result/exmotion-explanation.json result/exmotion-tags.json result/exmotion-tags-dist.Rds result/tags-pam.Rds
+all : result/exmotion.json result/people-dictionary.json result/people-dictionary.zip
+	
+# result/exmotion-dictionary.json result/exmotion-explanation.json result/exmotion-tags.json result/exmotion-tags-dist.Rds result/tags-pam.Rds result/exmotion-people-dist.Rds result/people-pam.Rds
+
+result/people-pam.Rds: people-pam.R result/exmotion-people-dist.Rds
+	Rscript people-pam.R
+
+result/exmotion-people-dist.Rds: people-dist.R result/exmotion-dictionary.json
+	Rscript people-dist.R
 
 result/exmotion.json: exec.php
 	$(PHP) exec.php
@@ -19,6 +27,16 @@ result/exmotion-tags-dist.Rds: tags-dist.R result/exmotion-explanation.json resu
 
 result/tags-pam.Rds: tags-pam.R result/exmotion-tags-dist.Rds
 	Rscript tags-pam.R
+
+result/people-dictionary.json: gen_name_title.php result/gen_name_title.txt
+	$(PHP) gen_name_title.php
+
+result/gen_name_title.txt: gen_name_title.R gen_name_title.cpp
+	Rscript gen_name_title.R > result/gen_name_title.txt
+
+result/people-dictionary.zip: result/people-dictionary.json
+	-rm $@
+	7z a $@ $<
 
 test :
 	-rm test.log
